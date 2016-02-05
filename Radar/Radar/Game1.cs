@@ -8,6 +8,9 @@ using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
+using Radar.Bellona.WoWModels;
+using Magic;
+using Radar.Bellona.MemoryReading;
 
 namespace Radar {
     /// <summary>
@@ -17,14 +20,21 @@ namespace Radar {
         GraphicsDeviceManager graphics;
         ExtendedSpriteBatch spriteBatch;
         public Texture2D UnitTexture;
-        private Rectangle TitleSafe;
+        public Texture2D SpellTexture;
         private MouseState mouse = new MouseState();
-        private Vector2 pos = new Vector2();
         private Vector2 startPoint = new Vector2();
         private Rectangle selectionBox = new Rectangle();
-        private List<RadarUnit> unitsToDraw = new List<RadarUnit>();
+        private List<RadarPlayer> unitsToDraw = new List<RadarPlayer>();
+        private List<RadarPlayer> spellsToDraw = new List<RadarPlayer>();
+
+        private BlackMagic wow;
+        private Vector2 PlayerPos;
+        private static WoWGlobal clientInfo;
         private bool selecting;
         private bool drawthisshit;
+        private TimeSpan bela = TimeSpan.Zero;
+        private TimeSpan gyula = TimeSpan.Zero;
+
         public Game1() {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
@@ -38,9 +48,19 @@ namespace Radar {
         /// </summary>
         protected override void Initialize() {
             // TODO: Add your initialization logic here
-            unitsToDraw.Add(new RadarUnit(new Vector2(200, 300), WoWClass.Mage));
-            unitsToDraw.Add(new RadarUnit(new Vector2(500, 300), WoWClass.Rogue));
+            if (!Initializer.ConnectToGame(out wow, Program.PROCESS_WINDOW_TITLE)) {
+                throw new Exception("No compatible Client");
+            }
+            clientInfo = new WoWGlobal(wow);
             base.Initialize();
+            Vector3 beluka = new GameObject(wow, clientInfo.PlayerGUID).Unit.Position;
+            PlayerPos = new Vector2(beluka.X, beluka.Y);
+
+            Bellona.EveryoneGetinHere.RefreshNearbyGameObjects(PlayerPos, wow, 500);
+
+            Bellona.EveryoneGetinHere.RefreshNewGameObjects(PlayerPos, wow);
+
+            System.Diagnostics.Debug.WriteLine("LOL");
         }
 
         /// <summary>
@@ -51,6 +71,7 @@ namespace Radar {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new ExtendedSpriteBatch(GraphicsDevice);
             UnitTexture = Content.Load<Texture2D>("arrow");
+            SpellTexture = Content.Load<Texture2D>("run");
             //TitleSafe = GetTitleSafeArea(.8f);
             //pos.X = GraphicsDevice.Viewport.Width / 2;
             //pos.Y = GraphicsDevice.Viewport.Height / 2;
@@ -72,8 +93,35 @@ namespace Radar {
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime) {
             // Allows the game to exit
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
+            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed) {
                 this.Exit();
+            }
+            SelectionBoxRefresh();
+            if ((gameTime.TotalGameTime - this.gyula) > TimeSpan.FromMilliseconds(750)) {
+                this.gyula = gameTime.TotalGameTime;
+                //Bellona.EveryoneGetinHere.RefreshNearbyGameObjects(PlayerPos, wow, 50);
+                Bellona.EveryoneGetinHere.RefreshNewGameObjects(PlayerPos, wow);
+            }
+            if ((gameTime.TotalGameTime - this.bela) > TimeSpan.FromMilliseconds(125)) {
+                this.bela = gameTime.TotalGameTime;
+                WoWRaid wr = new WoWRaid(wow);
+                Vector3 beluka = new GameObject(wow, clientInfo.PlayerGUID).Unit.Position;
+                PlayerPos = new Vector2(beluka.X, beluka.Y);
+                Console.WriteLine(Bellona.EveryoneGetinHere.NearbyGameObjects.Count + " " + Bellona.EveryoneGetinHere.newGameObjects.Count);
+                unitsToDraw.Clear();
+                foreach (GameObject go in Bellona.EveryoneGetinHere.NearbyGameObjects) {
+                    go.Unit.RefreshForRadar(wow, go);
+                    unitsToDraw.Add(new RadarPlayer(go));
+                }
+                spellsToDraw.Clear();
+                foreach (GameObject go in Bellona.EveryoneGetinHere.newGameObjects) {
+                    spellsToDraw.Add(new RadarPlayer(go,0));
+                }
+            }
+            base.Update(gameTime);
+        }
+
+        private void SelectionBoxRefresh() {
             mouse = Mouse.GetState();
             if (mouse.LeftButton == ButtonState.Pressed) {
                 if (selecting) {
@@ -97,9 +145,6 @@ namespace Radar {
                 drawthisshit = false;
                 selecting = false;
             }
-            // TODO: Add your update logic here
-
-            base.Update(gameTime);
         }
 
         /// <summary>
@@ -114,7 +159,8 @@ namespace Radar {
             if (drawthisshit) {
                 spriteBatch.DrawRectangle(selectionBox, Color.Red);
             }
-            spriteBatch.DrawUnits(unitsToDraw, UnitTexture);
+            spriteBatch.DrawPlayers(unitsToDraw, UnitTexture, PlayerPos);
+            spriteBatch.DrawPlayers(spellsToDraw, SpellTexture, PlayerPos);
             spriteBatch.End();
             base.Draw(gameTime);
         }

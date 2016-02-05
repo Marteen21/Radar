@@ -55,9 +55,18 @@ namespace Radar {
         public void DrawUnit(RadarUnit nUnit, Texture2D nTexture) {
             this.Draw(nTexture, nUnit.Position, null, nUnit.DrawColor, (float)(nUnit.Rotation-Math.PI / 2), new Vector2(nTexture.Width / 2, nTexture.Height / 2), 0.08f, SpriteEffects.None, 0f);
         }
+        public void DrawPlayer(RadarPlayer nUnit, Texture2D nTexture, Vector2 nPlayerPos) {
+            
+            this.Draw(nTexture, new Vector2(-2*(nUnit.Position.Y - nPlayerPos.Y) + this.GraphicsDevice.Viewport.Width / 2, -2*(nUnit.Position.X - nPlayerPos.X) + this.GraphicsDevice.Viewport.Height / 2), null, nUnit.DrawColor, (float)(-nUnit.Rotation - Math.PI / 2), new Vector2(nTexture.Width / 2, nTexture.Height / 2), 0.08f, SpriteEffects.None, 0f);
+        }
         public void DrawUnits(List<RadarUnit> nUnitlist, Texture2D nTexture) {
             foreach (RadarUnit u in nUnitlist) {
                 this.DrawUnit(u, nTexture);
+            }
+        }
+        public void DrawPlayers(List<RadarPlayer> nUnitlist, Texture2D nTexture, Vector2 nPlayerPos) {
+            foreach (RadarPlayer u in nUnitlist) {
+                this.DrawPlayer(u, nTexture, nPlayerPos);
             }
         }
     }

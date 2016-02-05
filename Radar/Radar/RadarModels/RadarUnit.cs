@@ -4,13 +4,15 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Radar.Bellona.WoWModels;
 
 namespace Radar {
     public class RadarUnit {
         private Color drawColor;
         private Vector2 position;
         private float rotation;
-        private uint baseaddr;
+
+        #region properties
         public Color DrawColor {
             get {
                 return drawColor;
@@ -40,6 +42,7 @@ namespace Radar {
                 rotation = value;
             }
         }
+        #endregion
 
         public RadarUnit(Vector2 pos, Color color) {
             this.DrawColor = color;
@@ -51,15 +54,16 @@ namespace Radar {
             this.Position = pos;
             this.Rotation = 0f;
         }
-        public RadarUnit(ulong guid) {
-            
+        public RadarUnit(Vector2 pos, float rot, WoWClass wclass) {
+            this.DrawColor = RadarUnit.GetColorFromWoWClass(wclass);
+            this.Position = pos;
+            this.Rotation = rot;
         }
 
-        
         public static Color GetColorFromWoWClass(WoWClass wclass) {
             switch (wclass) {
                 case WoWClass.None:
-                    return Color.Black;
+                    return Color.White;
                 case WoWClass.DeathKnight:
                     return new Color(0.77f, 0.12f, 0.23f);
                 case WoWClass.Druid:

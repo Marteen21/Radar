@@ -60,6 +60,12 @@
     <XnaCompressContent>true</XnaCompressContent>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="BlackMagic">
+      <HintPath>..\..\..\..\Refs\BlackMagic.dll</HintPath>
+    </Reference>
+    <Reference Include="fasmdll_managed">
+      <HintPath>..\..\..\..\Refs\fasmdll_managed.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
     <Reference Include="Microsoft.Xna.Framework.Game, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
     <Reference Include="Microsoft.Xna.Framework.Graphics, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
@@ -72,12 +78,31 @@
     <Reference Include="System.Net" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Bellona\Controller\ConstController.cs" />
+    <Compile Include="Bellona\Controller\SendKey.cs" />
+    <Compile Include="Bellona\EveryoneGetinHere.cs" />
+    <Compile Include="Bellona\MemoryReading\ConstOffsets.cs" />
+    <Compile Include="Bellona\MemoryReading\GameObject.cs" />
+    <Compile Include="Bellona\MemoryReading\Initializer.cs" />
+    <Compile Include="Bellona\WoWModels\MarkerGUIDs.cs" />
+    <Compile Include="Bellona\WoWModels\MovementFlags.cs" />
+    <Compile Include="Bellona\WoWModels\Spells\Curse.cs" />
+    <Compile Include="Bellona\WoWModels\Spells\DKModels.cs" />
+    <Compile Include="Bellona\WoWModels\Spells\DKRuneSpell.cs" />
+    <Compile Include="Bellona\WoWModels\Spells\DKRunicPowerSpell.cs" />
+    <Compile Include="Bellona\WoWModels\Spells\DoT.cs" />
+    <Compile Include="Bellona\WoWModels\Spells\Spell.cs" />
+    <Compile Include="Bellona\WoWModels\Spells\SpellWithCooldown.cs" />
+    <Compile Include="Bellona\WoWModels\WoWGlobal.cs" />
+    <Compile Include="Bellona\WoWModels\WoWParty.cs" />
+    <Compile Include="Bellona\WoWModels\WoWRaid.cs" />
+    <Compile Include="Bellona\WoWModels\WoWUnit.cs" />
     <Compile Include="ExtendedSpriteBatch.cs" />
-    <Compile Include="Player.cs" />
+    <Compile Include="RadarModels\RadarPlayer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Game1.cs" />
-    <Compile Include="Unit.cs" />
+    <Compile Include="RadarModels\RadarUnit.cs" />
     <Compile Include="WowModels.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -108,6 +133,9 @@
       <ProductName>Windows Installer 4.5</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\Microsoft.Xna.GameStudio.targets" />

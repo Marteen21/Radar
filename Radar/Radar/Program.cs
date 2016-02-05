@@ -4,6 +4,7 @@ namespace Radar {
 #if WINDOWS || XBOX
     static class Program
     {
+        public static string PROCESS_WINDOW_TITLE = "World of Warcraft";
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
